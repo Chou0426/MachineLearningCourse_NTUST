@@ -1,22 +1,24 @@
 import torch
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.dataset import random_split
 from torch import nn,optim
-import matplotlib.pyplot as plt
+
 
 # read file
-df_data = pd.read_csv("./W11_LSTM/temperature.csv",header=0)
+flight_dataset = sns.load_dataset('flights')
 
 scaler = MinMaxScaler(feature_range=(-1,1))
 
-'''Creat our dataset'''
-class TemperatureDataset(Dataset):
+'''Creat our dataset (input_data,label)'''
+class FlightsDataset(Dataset):
     def __init__(self,data):
-        self.df_temperature = data
-        self.org_data = self.df_temperature.mean_temp.to_numpy()
+        self.df_flights = data
+        self.org_data = self.df_flights.passengers.to_numpy()
         self.normalized_data = np.copy(self.org_data)
         self.normalized_data = self.normalized_data.reshape(-1,1)
         self.normalized_data = scaler.fit_transform(self.normalized_data)
@@ -31,20 +33,21 @@ class TemperatureDataset(Dataset):
             return 0
 
     def __getitem__(self, index):
+        # create label data
         target = self.normalized_data[self.sample_len + index]
         target = np.array(target).astype(np.float64)
 
-
+        # create input data
         i = self.normalized_data[index:(index + self.sample_len)]
         i = i.reshape(-1,1)
         i = torch.from_numpy(i)
         target = torch.from_numpy(target)
         
-
         return i , target
 
+
 '''Dataset split'''
-dataset = TemperatureDataset(df_data)
+dataset = FlightsDataset(flight_dataset)
 train_len = int(0.7 * len(dataset))
 test_len = len(dataset) - train_len
 
@@ -145,14 +148,15 @@ for i in range(len(dataset)):
     preds.append(act_pred.item())
 
 
-months = range(0,df_data.month.size)
-mean_temp = df_data.mean_temp
+idx = range(0,flight_dataset.year.size)
+passengers = flight_dataset.passengers
 
 plt.figure(figsize=(15,5))
-plt.title("Temp predict",fontsize = 16)
-plt.plot(months, mean_temp, 'b', label ='org')
-plt.plot(months[12:], preds, 'r', label = 'pred')
+plt.title("The number of Passengers prediction",fontsize = 16)
+plt.plot(idx, passengers, 'b', label ='org')
+plt.plot(idx[12:], preds, 'r', label = 'pred')
 plt.legend()
 plt.show()
+
 
 
