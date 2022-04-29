@@ -9,14 +9,16 @@ from torch.utils.data.dataset import random_split
 from torch import nn,optim
 
 
-# read file
+# load flights dataset
 flight_dataset = sns.load_dataset('flights')
 
+# create scaler for normalizing input data
 scaler = MinMaxScaler(feature_range=(-1,1))
 
 '''Creat our dataset (input_data,label)'''
 class FlightsDataset(Dataset):
     def __init__(self,data):
+        # normalize input data(passengers)
         self.df_flights = data
         self.org_data = self.df_flights.passengers.to_numpy()
         self.normalized_data = np.copy(self.org_data)
@@ -42,9 +44,9 @@ class FlightsDataset(Dataset):
         i = i.reshape(-1,1)
         i = torch.from_numpy(i)
         target = torch.from_numpy(target)
-        
+        print(i)
+        print(target)
         return i , target
-
 
 '''Dataset split'''
 dataset = FlightsDataset(flight_dataset)
