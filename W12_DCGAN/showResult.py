@@ -32,7 +32,7 @@ class Generator(nn.Module):
 device = torch.device('cuda' if torch.cuda.is_available else 'cpu')
 
 G = Generator(100).to(device)
-G.load_state_dict(torch.load('Mnist_Generator_epoch100.pt', map_location = torch.device('cpu')))
+G.load_state_dict(torch.load('Mnist_Generator_epoch10.pt', map_location = torch.device('cpu')))
 
 img = []
 noise = torch.randn(32, 100, 1, 1, device = device) # 32張
@@ -42,6 +42,6 @@ im = img[0].cpu().detach().numpy().transpose(1,2,0)  # transpose(1,2,0):調換�
 plt.imshow(im)
 plt.xticks([]) # 將圖片的刻度移除
 plt.yticks([])
-plt.savefig('Mnist_Result.png')
+plt.savefig('Mnist_Result10.png')
 plt.show()
 

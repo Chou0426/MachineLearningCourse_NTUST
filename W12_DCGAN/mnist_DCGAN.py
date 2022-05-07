@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import time
 
 batch_size = 64
-epoch = 100
+epoch = 10
 
 class Discriminator(nn.Module):
     def __init__(self):
@@ -67,8 +67,8 @@ D = Discriminator().to(device)
 G = Generator(100).to(device)
 
 loss_f = nn.BCELoss()
-D_opt = optim.Adam(D.parameters(), lr = 1e-5)
-G_opt = optim.Adam(G.parameters(), lr = 1e-5)
+D_opt = optim.Adam(D.parameters(), lr = 1e-4)
+G_opt = optim.Adam(G.parameters(), lr = 1e-4)
 
 
 D_loss = []
