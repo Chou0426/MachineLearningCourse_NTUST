@@ -6,34 +6,34 @@ from torchvision.transforms import transforms
 import matplotlib.pyplot as plt
 
 # Hyperparameter
-
 epoch = 10
 batch_size = 64
 learning_rate = 1e-4
 
 
 class Discriminator(nn.Module):
-    def __init__(self, c_dim, lable_dim):
+    def __init__(self, input_pic_dim, lable_dim):
         super(Discriminator, self).__init__()
         self.input_x = nn.Sequential(
-                        nn.Conv2d(c_dim, 64, 4, 2, 1),
+                        nn.Conv2d(input_pic_dim, 64, 4, 2, 1), # input 28 * 28 * 1 -> output 14 * 14 * 64
                         nn.LeakyReLU(),
         )
         self.input_y = nn.Sequential(
-                        nn.Conv2d(lable_dim, 64, 4, 2, 1),
+                        nn.Conv2d(lable_dim, 64, 4, 2, 1), # input 9 * 1 -> output 4 * 64
                         nn.LeakyReLU(),
         )
+        # Because using the depth concate(深度合併), so need to put input picture and label into convolution layer, then concate their output feature map
         self.concat = nn.Sequential(
                         nn.Conv2d(64*2, 64, 4, 2, 1),
                         nn.LeakyReLU(),
-                        nn.Conv2d(64, 128, 3, 2, 1),
+                        nn.Conv2d(64, 128, 3, 2, 1), 
                         nn.LeakyReLU(),
                         nn.Conv2d(128, 1, 4, 2, 0),
                         nn.Sigmoid(),
         )
 
     def forward(self, x, y):
-        x = self.input_x(x)
+        x = self.input_x(x) 
         y = self.input_y(y)
         out = torch.cat([x, y], dim = 1)
         out = self.concat(out)
@@ -41,7 +41,7 @@ class Discriminator(nn.Module):
         return out
 
 class Generator(nn.Module):
-    def __init__(self, noise_dim, lable_dim):
+    def __init__(self, noise_dim, noise_lable_dim):
         super(Generator, self).__init__()
         self.input_x = nn.Sequential(
                         nn.ConvTranspose2d(noise_dim, 256, 4, 1, 0, bias = False),
@@ -49,7 +49,7 @@ class Generator(nn.Module):
                         nn.ReLU(True),
         )
         self.input_y = nn.Sequential(
-                        nn.ConvTranspose2d(lable_dim, 256, 4, 1, 0, bias = False),
+                        nn.ConvTranspose2d(noise_lable_dim, 256, 4, 1, 0, bias = False),
                         nn.BatchNorm2d(256),
                         nn.ReLU(True),
         )
@@ -73,20 +73,21 @@ class Generator(nn.Module):
         return out
 
 label_dim = 10
-z_dim = 100
+noise_dim = 100
 image_size = 28
 
 # Noise data
-temp_noise = torch.randn(label_dim, z_dim) # 產生 10 * 100 維的亂數資料
+temp_noise = torch.randn(label_dim, noise_dim) # 亂數產生 10 張圖(dim = 10 * 100)
 fixed_noise = temp_noise
-fixed_c = torch.zeros(label_dim, 1)  # 產生 10 個種類的對應label
+fixed_c = torch.zeros(label_dim, 1)  # 產生 10 張圖的label(dim = 10 * 1)
 
+## 看到這邊
 for i in range(0,9):
     fixed_noise = torch.cat([fixed_noise, temp_noise], 0)
     temp = torch.ones(label_dim, 1) + i
     fixed_c = torch.cat([fixed_c, temp], 0)
 
-fixed_noise = fixed_noise.view(-1, z_dim, 1, 1)
+fixed_noise = fixed_noise.view(-1, noise_dim, 1, 1)
 
 # print('pred noise:', fixed_noise.shape)
 # print('pred label:', fixed_c.shape, '\t', fixed_c[10])
@@ -157,7 +158,7 @@ for i in range(epoch):
 
         # train G
         opt_G.zero_grad()
-        noise = torch.randn(batch_size, z_dim, 1, 1, device = device)
+        noise = torch.randn(batch_size, noise_dim, 1, 1, device = device)
         noise_label = (torch.rand(batch_size, 1) * label_dim).type(torch.LongTensor).squeeze()
         noise_label_onehot = onehot[noise_label].to(device)
         x_fake = G(noise, noise_label_onehot)

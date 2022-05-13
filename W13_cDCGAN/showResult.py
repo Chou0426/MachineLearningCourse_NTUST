@@ -33,7 +33,7 @@ class Generator(nn.Module):
     def forward(self, x, y):
         x = self.input_x(x)
         y = self.input_y(y)
-        out = torch.cat([x, y], dim = 1)
+        out = torch.cat([x, y], dim = 1)  
         out = self.concat(out)
 
         return out
