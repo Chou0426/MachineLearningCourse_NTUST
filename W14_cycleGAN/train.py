@@ -58,7 +58,7 @@ G_A2B.apply(weight_init_normal)
 G_B2A.apply(weight_init_normal)
 
 batch_size = 2
-epoch = 1
+epoch = 100
 decay_epoch = 10
 lr = 2e-3
 log_freq = 100
@@ -77,8 +77,8 @@ lr_scheduler_D = optim.lr_scheduler.LambdaLR(opt_D, lr_lambda = LamdaLR(epoch, 0
 #data
 transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
-            transforms.Resize((286,286)),
-            transforms.RandomCrop((256,256)),
+            transforms.Resize((128,128)),
+            transforms.RandomCrop((128,128)),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))])
 
@@ -106,7 +106,7 @@ total_len = len(dataA_loader) + len(dataB_loader)
 
 if __name__ == '__main__':
     for i in range(epoch):
-        progress_bar = tqdm(enumerate(zip(cycle(dataA_loader), dataB_loader)), total = total_len) # 會出現broken pipe問題，是因為windows不能執行num_workers超過0
+        progress_bar = tqdm(enumerate(zip(dataA_loader, dataB_loader)), total = total_len) # 會出現broken pipe問題，是因為windows不能執行num_workers超過0
 
         for idx, data in progress_bar:
             real_A = data[0][0].to(device)
@@ -178,11 +178,11 @@ if __name__ == '__main__':
                 vutils.save_image(fake_A, f"output/fake_A{epoch}.jpg", normalize = True)
                 vutils.save_image(fake_B, f"output/fake_B{epoch}.jpg", normalize = True)
 
-        torch.save(G_A2B.state_dict(), f"weights/netG_A2B_epoch_{epoch}.pth")
-        torch.save(G_B2A.state_dict(), f"weights/netG_B2A_epoch_{epoch}.pth")
+        torch.save(G_A2B.state_dict(), f"weights_100/netG_A2B_epoch_{epoch}.pth")
+        torch.save(G_B2A.state_dict(), f"weights_100/netG_B2A_epoch_{epoch}.pth")
 
         lr_scheduler_G.step()
         lr_scheduler_D.step()
         
-    torch.save(G_A2B.state_dict(), f"weights/netG_A2B.pth")
-    torch.save(G_B2A.state_dict(), f"weights/netG_B2A.pth")
+    torch.save(G_A2B.state_dict(), f"weights_100/netG_A2B.pth")
+    torch.save(G_B2A.state_dict(), f"weights_100/netG_B2A.pth")

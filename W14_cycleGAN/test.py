@@ -19,7 +19,7 @@ targetc_path = os.path.join(root, 'custom')
 datac_loader = DataLoader(dataset.ImageFolder(targetc_path, transform = transform), batch_size = batch_size, shuffle = True, num_workers = 0)
 
 G_B2A = Generator().to(device)
-G_B2A.load_state_dict(torch.load('weights/netG_B2A.pth', map_location = torch.device('cpu')))
+G_B2A.load_state_dict(torch.load('weights_100/netG_B2A.pth', map_location = torch.device('cpu')))
 G_B2A.eval()
 
 if __name__ == '__main__':
@@ -28,4 +28,4 @@ if __name__ == '__main__':
         real_image = data[0].to(device)
         fake_image = 0.5 * (G_B2A(real_image).data + 1.0)
 
-        vutils.save_image(fake_image.detach(), f"output/fake_image.jpg", normalize = True)
+        vutils.save_image(fake_image.detach(), f"output/fake_image_100.jpg", normalize = True)
