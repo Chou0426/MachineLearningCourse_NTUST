@@ -23,7 +23,7 @@ datac_loader = DataLoader(dataset.ImageFolder(targetc_path, transform = transfor
 
 
 G_B2A = Generator().to(device)
-G_B2A.load_state_dict(torch.load('weights_200_256x256/netG_B2A.pth', map_location = torch.device('cpu')))
+G_B2A.load_state_dict(torch.load('weights_100/netG_B2A_256x256_epoch_100.pth', map_location = torch.device('cpu')))
 G_B2A.eval()
 
 fake_img = []
@@ -63,12 +63,4 @@ if __name__ == '__main__':
         plt.yticks([])
         plt.title(i+1)
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     plt.show()
-=======
-        vutils.save_image(fake_image.detach(), f"output/fake_image_200_256x256.jpg", normalize = True)
->>>>>>> Stashed changes
-=======
-        vutils.save_image(fake_image.detach(), f"output/fake_image_200_256x256.jpg", normalize = True)
->>>>>>> Stashed changes
