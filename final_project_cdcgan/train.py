@@ -59,9 +59,9 @@ G_A2B.apply(weight_init_normal)
 G_B2A.apply(weight_init_normal)
 
 batch_size = 1
-epoch = 200
+epoch = 20
 decay_epoch = 10
-lr = 2e-3
+lr = 1e-6
 log_freq = 100
 
 #loss
@@ -78,8 +78,8 @@ lr_scheduler_D = optim.lr_scheduler.LambdaLR(opt_D, lr_lambda = LamdaLR(epoch, 0
 #data
 transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
-            transforms.Resize((128,128)),
-            transforms.RandomCrop((128,128)),
+            transforms.Resize((168,168)),
+            transforms.RandomCrop((144,144)),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))])
 
@@ -101,7 +101,7 @@ if os.path.exists(targetB_path) == False:
 dataA = datasets.ImageFolder(targetA_path, transform = transform)
 dataB = datasets.ImageFolder(targetB_path, transform = transform)
 dataA_loader = DataLoader(dataA, shuffle = True, batch_size = batch_size, num_workers = 0) # 學姊的是4
-dataB_loader = DataLoader(dataB, shuffle = True, batch_size = batch_size, num_workers = 0, drop_last= True) 
+dataB_loader = DataLoader(dataB, shuffle = True, batch_size = batch_size, num_workers = 0) 
 
 
 AVG_G_LOSS = []
@@ -180,19 +180,19 @@ if __name__ == '__main__':
             )
 
             if i % log_freq == 0:
-                vutils.save_image(real_A, f"output/real_A{epoch}.jpg", normalize = True)
-                vutils.save_image(real_B, f"output/real_B{epoch}.jpg", normalize = True)
+                vutils.save_image(real_A, f"output/real_A{epoch}_lr2e-6.jpg", normalize = True)
+                vutils.save_image(real_B, f"output/real_B{epoch}_lr2e-6.jpg", normalize = True)
                 fake_A = (G_B2A(real_B).data +1.0) * 0.5
                 fake_B = (G_B2A(real_A).data +1.0) * 0.5
 
-                vutils.save_image(fake_A, f"output/fake_A{epoch}.jpg", normalize = True)
-                vutils.save_image(fake_B, f"output/fake_B{epoch}.jpg", normalize = True)
+                vutils.save_image(fake_A, f"output/fake_A{epoch}_lr2e-6.jpg", normalize = True)
+                vutils.save_image(fake_B, f"output/fake_B{epoch}_lr2e-6.jpg", normalize = True)
 
             G_LOSS.append(loss_G.item())
             D_LOSS.append(loss_D.item())
             
-        torch.save(G_A2B.state_dict(), f"weights_200/netG_A2B_epoch_{epoch}.pth")
-        torch.save(G_B2A.state_dict(), f"weights_200/netG_B2A_epoch_{epoch}.pth")
+        torch.save(G_A2B.state_dict(), f"weights_20_lr_1e-6/netG_A2B_epoch_{epoch}_lr2e-6.pth")
+        torch.save(G_B2A.state_dict(), f"weights_20_lr_1e-6/netG_B2A_epoch_{epoch}_lr2e-6.pth")
 
         lr_scheduler_G.step()
         lr_scheduler_D.step()
@@ -200,11 +200,11 @@ if __name__ == '__main__':
         AVG_G_LOSS.append(torch.mean(torch.FloatTensor(G_LOSS)))
         AVG_D_LOSS.append(torch.mean(torch.FloatTensor(D_LOSS)))
 
-    torch.save(G_A2B.state_dict(), f"weights_200/netG_A2B.pth")
-    torch.save(G_B2A.state_dict(), f"weights_200/netG_B2A.pth")
+    torch.save(G_A2B.state_dict(), f"weights_20_lr_1e-6/netG_A2B_lr2e-6.pth")
+    torch.save(G_B2A.state_dict(), f"weights_20_lr_1e-6/netG_B2A_lr2e-6.pth")
 
     plt.figure(1)
-    plt.title('LOSS_200')
+    plt.title('LOSS_20_lr1e-6')
     plt.plot(AVG_G_LOSS, 'b', label = 'G_loss')
     plt.plot(AVG_D_LOSS, 'r', label = 'D_loss')
     plt.legend()
