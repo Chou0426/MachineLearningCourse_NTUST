@@ -59,8 +59,13 @@ G_A2B.apply(weight_init_normal)
 G_B2A.apply(weight_init_normal)
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 batch_size = 1
 epoch = 20
+=======
+batch_size = 2
+epoch = 200
+>>>>>>> Stashed changes
 =======
 batch_size = 2
 epoch = 200
@@ -84,8 +89,13 @@ lr_scheduler_D = optim.lr_scheduler.LambdaLR(opt_D, lr_lambda = LamdaLR(epoch, 0
 transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             transforms.Resize((168,168)),
             transforms.RandomCrop((144,144)),
+=======
+            transforms.Resize((286,286)),
+            transforms.RandomCrop((256,256)),
+>>>>>>> Stashed changes
 =======
             transforms.Resize((286,286)),
             transforms.RandomCrop((256,256)),
@@ -201,9 +211,15 @@ if __name__ == '__main__':
             G_LOSS.append(loss_G.item())
             D_LOSS.append(loss_D.item())
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             
         torch.save(G_A2B.state_dict(), f"weights_20_lr_1e-6/netG_A2B_epoch_{epoch}_lr2e-6.pth")
         torch.save(G_B2A.state_dict(), f"weights_20_lr_1e-6/netG_B2A_epoch_{epoch}_lr2e-6.pth")
+=======
+
+        torch.save(G_A2B.state_dict(), f"weights_200_256x256/netG_A2B_epoch_{epoch}.pth")
+        torch.save(G_B2A.state_dict(), f"weights_200_256x256/netG_B2A_epoch_{epoch}.pth")
+>>>>>>> Stashed changes
 =======
 
         torch.save(G_A2B.state_dict(), f"weights_200_256x256/netG_A2B_epoch_{epoch}.pth")
@@ -217,17 +233,23 @@ if __name__ == '__main__':
         AVG_D_LOSS.append(torch.mean(torch.FloatTensor(D_LOSS)))
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     torch.save(G_A2B.state_dict(), f"weights_20_lr_1e-6/netG_A2B_lr2e-6.pth")
     torch.save(G_B2A.state_dict(), f"weights_20_lr_1e-6/netG_B2A_lr2e-6.pth")
 
     plt.figure(1)
     plt.title('LOSS_20_lr1e-6')
 =======
+=======
+>>>>>>> Stashed changes
     torch.save(G_A2B.state_dict(), f"weights_200_256x256/netG_A2B.pth")
     torch.save(G_B2A.state_dict(), f"weights_200_256x256/netG_B2A.pth")
 
     plt.figure(1)
     plt.title('LOSS_200_256x256')
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     plt.plot(AVG_G_LOSS, 'b', label = 'G_loss')
     plt.plot(AVG_D_LOSS, 'r', label = 'D_loss')

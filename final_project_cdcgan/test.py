@@ -64,7 +64,11 @@ if __name__ == '__main__':
         plt.title(i+1)
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     plt.show()
+=======
+        vutils.save_image(fake_image.detach(), f"output/fake_image_200_256x256.jpg", normalize = True)
+>>>>>>> Stashed changes
 =======
         vutils.save_image(fake_image.detach(), f"output/fake_image_200_256x256.jpg", normalize = True)
 >>>>>>> Stashed changes
