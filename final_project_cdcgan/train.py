@@ -58,8 +58,8 @@ D_B.apply(weight_init_normal)
 G_A2B.apply(weight_init_normal)
 G_B2A.apply(weight_init_normal)
 
-batch_size = 2
-epoch = 20
+batch_size = 1
+epoch = 200
 decay_epoch = 10
 lr = 2e-3
 log_freq = 100
@@ -78,8 +78,8 @@ lr_scheduler_D = optim.lr_scheduler.LambdaLR(opt_D, lr_lambda = LamdaLR(epoch, 0
 #data
 transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
-            transforms.Resize((256,256)),
-            transforms.RandomCrop((224,224)),
+            transforms.Resize((128,128)),
+            transforms.RandomCrop((128,128)),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))])
 
@@ -191,8 +191,8 @@ if __name__ == '__main__':
             G_LOSS.append(loss_G.item())
             D_LOSS.append(loss_D.item())
             
-        torch.save(G_A2B.state_dict(), f"weights_20/netG_A2B_epoch_{epoch}.pth")
-        torch.save(G_B2A.state_dict(), f"weights_20/netG_B2A_epoch_{epoch}.pth")
+        torch.save(G_A2B.state_dict(), f"weights_200/netG_A2B_epoch_{epoch}.pth")
+        torch.save(G_B2A.state_dict(), f"weights_200/netG_B2A_epoch_{epoch}.pth")
 
         lr_scheduler_G.step()
         lr_scheduler_D.step()
@@ -200,11 +200,11 @@ if __name__ == '__main__':
         AVG_G_LOSS.append(torch.mean(torch.FloatTensor(G_LOSS)))
         AVG_D_LOSS.append(torch.mean(torch.FloatTensor(D_LOSS)))
 
-    torch.save(G_A2B.state_dict(), f"weights_20/netG_A2B.pth")
-    torch.save(G_B2A.state_dict(), f"weights_20/netG_B2A.pth")
+    torch.save(G_A2B.state_dict(), f"weights_200/netG_A2B.pth")
+    torch.save(G_B2A.state_dict(), f"weights_200/netG_B2A.pth")
 
     plt.figure(1)
-    plt.title('LOSS_20')
+    plt.title('LOSS_200')
     plt.plot(AVG_G_LOSS, 'b', label = 'G_loss')
     plt.plot(AVG_D_LOSS, 'r', label = 'D_loss')
     plt.legend()

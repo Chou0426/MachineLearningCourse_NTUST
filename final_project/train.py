@@ -187,17 +187,17 @@ if __name__ == '__main__':
                 vutils.save_image(fake_B, f"output/fake_B{epoch}.jpg", normalize = True)
         G_LOSS.append(loss_G)
         D_LOSS.append(loss_D)
-        torch.save(G_A2B.state_dict(), f"weights_5/netG_A2B_epoch_{epoch}.pth")
-        torch.save(G_B2A.state_dict(), f"weights_5/netG_B2A_epoch_{epoch}.pth")
+        torch.save(G_A2B.state_dict(), f"weights_50/netG_A2B_epoch_{epoch}.pth")
+        torch.save(G_B2A.state_dict(), f"weights_50/netG_B2A_epoch_{epoch}.pth")
 
         lr_scheduler_G.step()
         lr_scheduler_D.step()
         
-    torch.save(G_A2B.state_dict(), f"weights_5/netG_A2B.pth")
-    torch.save(G_B2A.state_dict(), f"weights_5/netG_B2A.pth")
+    torch.save(G_A2B.state_dict(), f"weights_50/netG_A2B.pth")
+    torch.save(G_B2A.state_dict(), f"weights_50/netG_B2A.pth")
 
     plt.figure(1)
-    plt.title('LOSS_5')
+    plt.title('LOSS_50')
     plt.plot(G_LOSS, 'b', label = 'G_loss')
     plt.plot(D_LOSS, 'r', label = 'D_loss')
     plt.legend()
