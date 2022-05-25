@@ -58,8 +58,13 @@ D_B.apply(weight_init_normal)
 G_A2B.apply(weight_init_normal)
 G_B2A.apply(weight_init_normal)
 
+<<<<<<< Updated upstream
 batch_size = 1
 epoch = 20
+=======
+batch_size = 2
+epoch = 200
+>>>>>>> Stashed changes
 decay_epoch = 10
 lr = 1e-6
 log_freq = 100
@@ -78,8 +83,13 @@ lr_scheduler_D = optim.lr_scheduler.LambdaLR(opt_D, lr_lambda = LamdaLR(epoch, 0
 #data
 transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
+<<<<<<< Updated upstream
             transforms.Resize((168,168)),
             transforms.RandomCrop((144,144)),
+=======
+            transforms.Resize((286,286)),
+            transforms.RandomCrop((256,256)),
+>>>>>>> Stashed changes
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))])
 
@@ -190,9 +200,15 @@ if __name__ == '__main__':
 
             G_LOSS.append(loss_G.item())
             D_LOSS.append(loss_D.item())
+<<<<<<< Updated upstream
             
         torch.save(G_A2B.state_dict(), f"weights_20_lr_1e-6/netG_A2B_epoch_{epoch}_lr2e-6.pth")
         torch.save(G_B2A.state_dict(), f"weights_20_lr_1e-6/netG_B2A_epoch_{epoch}_lr2e-6.pth")
+=======
+
+        torch.save(G_A2B.state_dict(), f"weights_200_256x256/netG_A2B_epoch_{epoch}.pth")
+        torch.save(G_B2A.state_dict(), f"weights_200_256x256/netG_B2A_epoch_{epoch}.pth")
+>>>>>>> Stashed changes
 
         lr_scheduler_G.step()
         lr_scheduler_D.step()
@@ -200,11 +216,19 @@ if __name__ == '__main__':
         AVG_G_LOSS.append(torch.mean(torch.FloatTensor(G_LOSS)))
         AVG_D_LOSS.append(torch.mean(torch.FloatTensor(D_LOSS)))
 
+<<<<<<< Updated upstream
     torch.save(G_A2B.state_dict(), f"weights_20_lr_1e-6/netG_A2B_lr2e-6.pth")
     torch.save(G_B2A.state_dict(), f"weights_20_lr_1e-6/netG_B2A_lr2e-6.pth")
 
     plt.figure(1)
     plt.title('LOSS_20_lr1e-6')
+=======
+    torch.save(G_A2B.state_dict(), f"weights_200_256x256/netG_A2B.pth")
+    torch.save(G_B2A.state_dict(), f"weights_200_256x256/netG_B2A.pth")
+
+    plt.figure(1)
+    plt.title('LOSS_200_256x256')
+>>>>>>> Stashed changes
     plt.plot(AVG_G_LOSS, 'b', label = 'G_loss')
     plt.plot(AVG_D_LOSS, 'r', label = 'D_loss')
     plt.legend()
