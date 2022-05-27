@@ -58,10 +58,18 @@ D_B.apply(weight_init_normal)
 G_A2B.apply(weight_init_normal)
 G_B2A.apply(weight_init_normal)
 
+
+batch_size = 1
+epoch = 20
+
 batch_size = 2
-epoch = 5
+epoch = 200
+
+batch_size = 2
+epoch = 200
+
 decay_epoch = 10
-lr = 2e-3
+lr = 1e-6
 log_freq = 100
 
 #loss
@@ -78,12 +86,12 @@ lr_scheduler_D = optim.lr_scheduler.LambdaLR(opt_D, lr_lambda = LamdaLR(epoch, 0
 #data
 transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
-            transforms.Resize((128,128)),
-            transforms.RandomCrop((128,128)),
+            transforms.Resize((286,286)),
+            transforms.RandomCrop((256,256)),
             transforms.ToTensor(),
             transforms.Normalize((0.5,), (0.5,))])
 
-train_path = 'cityscapes'
+train_path = 'facades'
 trainA_path = os.path.join(train_path, 'trainA')
 targetA_path = os.path.join(train_path, 'new_trainA')
 trainB_path = os.path.join(train_path, 'trainB')
@@ -101,17 +109,19 @@ if os.path.exists(targetB_path) == False:
 dataA = datasets.ImageFolder(targetA_path, transform = transform)
 dataB = datasets.ImageFolder(targetB_path, transform = transform)
 dataA_loader = DataLoader(dataA, shuffle = True, batch_size = batch_size, num_workers = 0) # 學姊的是4
-dataB_loader = DataLoader(dataB, shuffle = True, batch_size = batch_size, num_workers = 0, drop_last= True) 
+dataB_loader = DataLoader(dataB, shuffle = True, batch_size = batch_size, num_workers = 0) 
 
-G_LOSS = []
-D_LOSS = []
+
+AVG_G_LOSS = []
+AVG_D_LOSS = []
 
 total_len = len(dataA_loader) + len(dataB_loader)
 
 if __name__ == '__main__':
     for i in range(epoch):
         progress_bar = tqdm(enumerate(zip(dataA_loader, dataB_loader)), total = total_len) # 會出現broken pipe問題，是因為windows不能執行num_workers超過0
-
+        G_LOSS = []
+        D_LOSS = []
         for idx, data in progress_bar:
             real_A = data[0][0].to(device)
             real_B = data[1][0].to(device)
@@ -178,28 +188,37 @@ if __name__ == '__main__':
             )
 
             if i % log_freq == 0:
-                vutils.save_image(real_A, f"output/real_A{epoch}.jpg", normalize = True)
-                vutils.save_image(real_B, f"output/real_B{epoch}.jpg", normalize = True)
+                vutils.save_image(real_A, f"output/real_A{epoch}_lr2e-6.jpg", normalize = True)
+                vutils.save_image(real_B, f"output/real_B{epoch}_lr2e-6.jpg", normalize = True)
                 fake_A = (G_B2A(real_B).data +1.0) * 0.5
                 fake_B = (G_B2A(real_A).data +1.0) * 0.5
 
-                vutils.save_image(fake_A, f"output/fake_A{epoch}.jpg", normalize = True)
-                vutils.save_image(fake_B, f"output/fake_B{epoch}.jpg", normalize = True)
-        G_LOSS.append(loss_G)
-        D_LOSS.append(loss_D)
-        torch.save(G_A2B.state_dict(), f"weights_50/netG_A2B_epoch_{epoch}.pth")
-        torch.save(G_B2A.state_dict(), f"weights_50/netG_B2A_epoch_{epoch}.pth")
+                vutils.save_image(fake_A, f"output/fake_A{epoch}_lr2e-6.jpg", normalize = True)
+                vutils.save_image(fake_B, f"output/fake_B{epoch}_lr2e-6.jpg", normalize = True)
+
+            G_LOSS.append(loss_G.item())
+            D_LOSS.append(loss_D.item())
+
+
+        torch.save(G_A2B.state_dict(), f"weights_200_256x256/netG_A2B_epoch_{epoch}.pth")
+        torch.save(G_B2A.state_dict(), f"weights_200_256x256/netG_B2A_epoch_{epoch}.pth")
 
         lr_scheduler_G.step()
         lr_scheduler_D.step()
-        
-    torch.save(G_A2B.state_dict(), f"weights_50/netG_A2B.pth")
-    torch.save(G_B2A.state_dict(), f"weights_50/netG_B2A.pth")
+
+        AVG_G_LOSS.append(torch.mean(torch.FloatTensor(G_LOSS)))
+        AVG_D_LOSS.append(torch.mean(torch.FloatTensor(D_LOSS)))
+
+
+
+    torch.save(G_A2B.state_dict(), f"weights_200_256x256/netG_A2B.pth")
+    torch.save(G_B2A.state_dict(), f"weights_200_256x256/netG_B2A.pth")
 
     plt.figure(1)
-    plt.title('LOSS_50')
-    plt.plot(G_LOSS, 'b', label = 'G_loss')
-    plt.plot(D_LOSS, 'r', label = 'D_loss')
+    plt.title('LOSS_200_256x256')
+
+    plt.plot(AVG_G_LOSS, 'b', label = 'G_loss')
+    plt.plot(AVG_D_LOSS, 'r', label = 'D_loss')
     plt.legend()
     plt.show()
 
